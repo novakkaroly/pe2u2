@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -12,27 +13,27 @@ jobs:
       contents: read
       pages: write
       id-token: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+      
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+      
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-
+      
       - name: Build with Vite
         run: npm run build
         env:
           VITE_APP_TITLE: 'Project Explore 2 Unit 2'
-
+      
       - name: Upload artifact
-    uses: actions/upload-pages-artifac
-    with:
+        uses: actions/upload-pages-artifact@v3
+        with:
           path: 'dist'
-
+      
       - name: Deploy to GitHub Pages
-uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v4
