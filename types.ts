@@ -8,4 +8,11 @@ export interface QuestionResult {
   userAnswer: string;
 }
 
+export interface MistakeItem {
+  question: string;
+  userAnswer: string;
+  correctAnswer: string;
+  context?: string;
+}
+
 export type TabType = 'story1' | 'story2' | 'grammar' | 'vocab' | 'communication';

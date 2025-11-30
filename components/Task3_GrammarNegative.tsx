@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SectionWrapper } from './SectionWrapper';
-import { Check, X, RefreshCcw } from 'lucide-react';
+import { MistakeItem } from '../types';
+import { Check, X } from 'lucide-react';
 
 const sentences = [
   { id: 1, original: "Trees blew down in the tornado.", answer: "Trees didn't blow down in the tornado" },
@@ -14,6 +15,7 @@ const sentences = [
 export const Task3_GrammarNegative: React.FC = () => {
   const [inputs, setInputs] = useState<Record<number, string>>({});
   const [results, setResults] = useState<Record<number, boolean>>({});
+  const [mistakes, setMistakes] = useState<MistakeItem[]>([]);
   const [checked, setChecked] = useState(false);
 
   const handleChange = (id: number, val: string) => {
@@ -25,21 +27,36 @@ export const Task3_GrammarNegative: React.FC = () => {
 
   const checkAnswers = () => {
     const newResults: Record<number, boolean> = {};
+    const newMistakes: MistakeItem[] = [];
+
     sentences.forEach(s => {
       const userNorm = normalize(inputs[s.id] || '');
       const answerNorm = normalize(s.answer);
       // Allow full form as well
       const altAnswerNorm = answerNorm.replace("didn't", "did not").replace("wasn't", "was not").replace("weren't", "were not");
       
-      newResults[s.id] = userNorm === answerNorm || userNorm === altAnswerNorm;
+      const isCorrect = userNorm === answerNorm || userNorm === altAnswerNorm;
+      newResults[s.id] = isCorrect;
+
+      if (!isCorrect) {
+        newMistakes.push({
+          question: s.original,
+          userAnswer: inputs[s.id] || '(empty)',
+          correctAnswer: s.answer,
+          context: "Task: Convert to Past Simple Negative"
+        });
+      }
     });
+
     setResults(newResults);
+    setMistakes(newMistakes);
     setChecked(true);
   };
 
   const reset = () => {
     setInputs({});
     setResults({});
+    setMistakes([]);
     setChecked(false);
   };
 
@@ -51,6 +68,7 @@ export const Task3_GrammarNegative: React.FC = () => {
       subtitle="Write the sentences in the negative form. Use contractions (e.g. didn't)."
       score={checked ? correctCount : undefined}
       total={sentences.length}
+      mistakes={mistakes}
       onCheck={checkAnswers}
       onReset={reset}
     >

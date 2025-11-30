@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SectionWrapper } from './SectionWrapper';
+import { MistakeItem } from '../types';
 
 const words = ["cloudy", "wet", "windy", "snowing", "stormy", "sunny", "hailing"];
 const questions = [
@@ -14,6 +15,7 @@ const questions = [
 export const Task5_GapFill: React.FC = () => {
   const [selections, setSelections] = useState<Record<number, string>>({});
   const [results, setResults] = useState<Record<number, boolean>>({});
+  const [mistakes, setMistakes] = useState<MistakeItem[]>([]);
   const [checked, setChecked] = useState(false);
 
   const handleSelect = (id: number, val: string) => {
@@ -23,16 +25,31 @@ export const Task5_GapFill: React.FC = () => {
 
   const checkAnswers = () => {
     const newResults: Record<number, boolean> = {};
+    const newMistakes: MistakeItem[] = [];
+
     questions.forEach(q => {
-      newResults[q.id] = selections[q.id] === q.answer;
+      const isCorrect = selections[q.id] === q.answer;
+      newResults[q.id] = isCorrect;
+      
+      if (!isCorrect) {
+        newMistakes.push({
+          question: q.text,
+          userAnswer: selections[q.id] || '(empty)',
+          correctAnswer: q.answer,
+          context: "Topic: Weather Vocabulary"
+        });
+      }
     });
+
     setResults(newResults);
+    setMistakes(newMistakes);
     setChecked(true);
   };
 
   const reset = () => {
     setSelections({});
     setResults({});
+    setMistakes([]);
     setChecked(false);
   };
 
@@ -44,6 +61,7 @@ export const Task5_GapFill: React.FC = () => {
       subtitle="Complete the sentences with one of the words from the box."
       score={checked ? correctCount : undefined}
       total={questions.length}
+      mistakes={mistakes}
       onCheck={checkAnswers}
       onReset={reset}
     >

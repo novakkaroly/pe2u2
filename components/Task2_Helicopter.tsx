@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SectionWrapper } from './SectionWrapper';
 import { Check, X } from 'lucide-react';
+import { MistakeItem } from '../types';
 
 const questions = [
   { 
@@ -53,6 +54,7 @@ const questions = [
 export const Task2_Helicopter: React.FC = () => {
   const [results, setResults] = useState<Record<number, boolean>>({});
   const [selections, setSelections] = useState<Record<number, string>>({});
+  const [mistakes, setMistakes] = useState<MistakeItem[]>([]);
   const [checked, setChecked] = useState(false);
 
   const handleSelect = (id: number, value: string) => {
@@ -62,16 +64,35 @@ export const Task2_Helicopter: React.FC = () => {
 
   const checkAnswers = () => {
     const newResults: Record<number, boolean> = {};
+    const newMistakes: MistakeItem[] = [];
+
     questions.forEach(q => {
-      newResults[q.id] = selections[q.id] === q.answer;
+      const isCorrect = selections[q.id] === q.answer;
+      newResults[q.id] = isCorrect;
+      
+      if (!isCorrect) {
+        // Find option text for logging
+        const userOpt = q.options.find(o => o.id === selections[q.id])?.text;
+        const correctOpt = q.options.find(o => o.id === q.answer)?.text;
+
+        newMistakes.push({
+          question: q.question,
+          userAnswer: userOpt ? `${selections[q.id]}: ${userOpt}` : 'No answer',
+          correctAnswer: correctOpt ? `${q.answer}: ${correctOpt}` : q.answer,
+          context: "Reading Comprehension: Joe's Helicopter Ride"
+        });
+      }
     });
+
     setResults(newResults);
+    setMistakes(newMistakes);
     setChecked(true);
   };
 
   const reset = () => {
     setSelections({});
     setResults({});
+    setMistakes([]);
     setChecked(false);
   };
 
@@ -83,6 +104,7 @@ export const Task2_Helicopter: React.FC = () => {
       subtitle="Read about Joe's adventure and choose the correct option (A or B)."
       score={checked ? correctCount : undefined}
       total={questions.length}
+      mistakes={mistakes}
       onCheck={checkAnswers}
       onReset={reset}
     >
