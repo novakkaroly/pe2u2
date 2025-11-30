@@ -30,8 +30,9 @@ jobs:
           VITE_APP_TITLE: 'Project Explore 2 Unit 2'
 
       - name: Upload artifact
-    id: deployment        uses: actions/upload-pages-artifact@v3
-        with:
+    id: deployment
+    uses: actions/upload-pages-artifac
+    with:
           path: 'dist'
 
       - name: Deploy to GitHub Pages
