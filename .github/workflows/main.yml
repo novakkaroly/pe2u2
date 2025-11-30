@@ -30,8 +30,7 @@ jobs:
           VITE_APP_TITLE: 'Project Explore 2 Unit 2'
 
       - name: Upload artifact
-            id: deployment
-        uses: actions/upload-pages-artifact@v3
+    id: deployment        uses: actions/upload-pages-artifact@v3
         with:
           path: 'dist'
 
